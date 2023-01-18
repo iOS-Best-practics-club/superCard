@@ -6,6 +6,6 @@ final class BPSuperCardTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(BPSuperCard().text, "Hello, World!")
+        XCTAssertEqual(BPSuperCard().text, "inspired by https://medium.com/yandex-maps-ios/custom-paging-в-ios-c4dd4611e589")
     }
 }
