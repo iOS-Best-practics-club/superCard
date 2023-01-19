@@ -35,7 +35,7 @@ superCardView.animationParameters = .spring(.default)
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/iOS-Best-practics-club/superCard.git")
+    .package(url: "https://github.com/iOS-Best-practics-club/superCard.git", branch: "main")
 ]
 ```
 
