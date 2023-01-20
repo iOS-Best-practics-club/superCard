@@ -12,6 +12,7 @@ public protocol SuperCardViewContent: AnyObject {
   var contentOffset: CGPoint { get set }
   var contentSize: CGSize { get }
   var contentInset: UIEdgeInsets { get }
+  func tracking(scrollView: UIScrollView)
   func addListener(_ listener: SuperCardViewContentDelegate)
   func removeListener(_ listener: SuperCardViewContentDelegate)
 }

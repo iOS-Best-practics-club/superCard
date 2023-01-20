@@ -15,11 +15,11 @@ open class ViewWithScrollViewCardViewContent: SuperCardViewContent {
     return impl.contentView
   }
 
-  open var scrollView: UIScrollView {
+  open var scrollView: UIScrollView? {
     return impl.scrollView
   }
 
-  public init(contentView: UIView, scrollView: UIScrollView) {
+  public init(contentView: UIView, scrollView: UIScrollView? = nil) {
     self.impl = Impl(contentView: contentView, scrollView: scrollView)
   }
 
@@ -46,6 +46,10 @@ open class ViewWithScrollViewCardViewContent: SuperCardViewContent {
     return impl.contentInset
   }
 
+  open func tracking(scrollView: UIScrollView) {
+    impl.tracking(scrollView: scrollView)
+  }
+
   open func addListener(_ listener: SuperCardViewContentDelegate) {
     impl.addListener(listener)
   }
@@ -68,9 +72,9 @@ private class CardViewWithScrollContentImpl: NSObject {
 
   let contentView: UIView
 
-  let scrollView: UIScrollView
+  let scrollView: UIScrollView?
 
-  init(contentView: UIView, scrollView: UIScrollView) {
+  init(contentView: UIView, scrollView: UIScrollView? = nil) {
     self.contentView = contentView
     self.scrollView = scrollView
 
@@ -78,21 +82,8 @@ private class CardViewWithScrollContentImpl: NSObject {
 
     delegateProxy.addListener(self)
     setupDelegate()
+    observe()
 
-    self.scrollViewObservations = [
-      scrollView.observe(\.contentSize, options: [.new, .old]) { [weak self] _, value in
-        guard let self = self, let newValue = value.newValue, value.isChanged else { return }
-        self.notifier.forEach { $0.superCardViewContent(self, didChangeContentSize: newValue) }
-      },
-      scrollView.observe(\.contentInset, options: [.new, .old]) { [weak self] _, value in
-        guard let self = self, let newValue = value.newValue, value.isChanged else { return }
-        self.notifier.forEach { $0.superCardViewContent(self, didChangeContentInset: newValue) }
-      },
-      scrollView.observe(\.delegate, options: [.new, .old]) { [weak self] _, value in
-        guard let self = self, let old = value.newValue, old !== self.delegateProxy else { return }
-        self.setupDelegate()
-      }
-    ]
   }
 
   deinit {
@@ -109,7 +100,26 @@ private class CardViewWithScrollContentImpl: NSObject {
   private let delegateProxy = ScrollViewProxy(scrollView: nil)
 
   private func setupDelegate() {
+    guard let scrollView else { return }
     delegateProxy.set(scrollView: scrollView)
+  }
+
+  private func observe() {
+    guard let scrollView else { return }
+    self.scrollViewObservations = [
+      scrollView.observe(\.contentSize, options: [.new, .old]) { [weak self] _, value in
+        guard let self = self, let newValue = value.newValue, value.isChanged else { return }
+        self.notifier.forEach { $0.superCardViewContent(self, didChangeContentSize: newValue) }
+      },
+      scrollView.observe(\.contentInset, options: [.new, .old]) { [weak self] _, value in
+        guard let self = self, let newValue = value.newValue, value.isChanged else { return }
+        self.notifier.forEach { $0.superCardViewContent(self, didChangeContentInset: newValue) }
+      },
+      scrollView.observe(\.delegate, options: [.new, .old]) { [weak self] _, value in
+        guard let self = self, let old = value.newValue, old !== self.delegateProxy else { return }
+        self.setupDelegate()
+      }
+    ]
   }
 
 }
@@ -122,19 +132,24 @@ extension CardViewWithScrollContentImpl: SuperCardViewContent {
 
   var contentOffset: CGPoint {
     get {
-      return scrollView.contentOffset
+      return scrollView?.contentOffset ?? .zero
     }
     set {
-      scrollView.contentOffset = newValue
+      scrollView?.contentOffset = newValue
     }
   }
 
   var contentSize: CGSize {
-    return scrollView.contentSize
+    return scrollView?.contentSize ?? .zero
   }
 
   var contentInset: UIEdgeInsets {
-    return scrollView.contentInset
+    return scrollView?.contentInset ?? .zero
+  }
+
+  func tracking(scrollView: UIScrollView) {
+    delegateProxy.set(scrollView: scrollView)
+    observe()
   }
 
   func addListener(_ listener: SuperCardViewContentDelegate) {

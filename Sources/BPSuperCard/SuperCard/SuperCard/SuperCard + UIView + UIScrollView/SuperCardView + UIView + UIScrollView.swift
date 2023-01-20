@@ -12,7 +12,7 @@ public extension SuperCardView {
   /// `scrollView.delegate` will be used by `ScrollDrawerViewContent`.
   convenience init(
     contentView: UIView,
-    scrollView: UIScrollView,
+    scrollView: UIScrollView? = nil,
     headerView: UIView
   ) {
     self.init(
@@ -32,7 +32,7 @@ public extension SuperSnappingView {
   /// `scrollView.delegate` will be used by `ScrollDrawerViewContent`.
   convenience init(
     contentView: UIView,
-    scrollView: UIScrollView,
+    scrollView: UIScrollView? = nil,
     headerView: UIView
   ) {
     self.init(

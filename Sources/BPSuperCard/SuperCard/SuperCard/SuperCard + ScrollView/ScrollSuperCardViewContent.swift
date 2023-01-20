@@ -42,6 +42,10 @@ open class ScrollDrawerViewContent: SuperCardViewContent {
     return impl.contentInset
   }
 
+  open func tracking(scrollView: UIScrollView) {
+    impl.tracking(scrollView: scrollView)
+  }
+
   open func addListener(_ listener: SuperCardViewContentDelegate) {
     impl.addListener(listener)
   }
@@ -111,6 +115,10 @@ extension ScrollSuperCardViewContentImpl: SuperCardViewContent {
 
   var view: UIView {
     return scrollView
+  }
+
+  func tracking(scrollView: UIScrollView) {
+    delegateProxy.set(scrollView: scrollView)
   }
 
   var contentOffset: CGPoint {
